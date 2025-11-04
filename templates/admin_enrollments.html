@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Enrollments - CourseHub{% endblock %}
+
+{% block content %}
+<div class="admin-enrollments">
+    <h1>All Enrollments</h1>
+    
+    {% if enrollments %}
+    <div class="enrollments-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>USN</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Enrolled At</th>
+                    <th>Approved At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments %}
+                <tr id="enrollment-{{ enrollment.id }}">
+                    <td>{{ enrollment.student.name }}</td>
+                    <td>{{ enrollment.student.usn }}</td>
+                    <td>{{ enrollment.course.title }}</td>
+                    <td>
+                        <span class="status-badge status-{{ enrollment.status }}" id="status-{{ enrollment.id }}">{{ enrollment.status|title }}</span>
+                    </td>
+                    <td>{{ enrollment.enrolled_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if enrollment.approved_at %}
+                        {{ enrollment.approved_at.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if enrollment.status == 'pending' %}
+                        <div class="enrollment-actions">
+                            <button class="btn btn-primary btn-small approve-btn" data-enrollment-id="{{ enrollment.id }}">Approve</button>
+                            <button class="btn btn-secondary btn-small reject-btn" data-enrollment-id="{{ enrollment.id }}" style="background: hsl(0 50% 40%);">Reject</button>
+                        </div>
+                        {% else %}
+                        <span style="color: var(--text-secondary); font-size: 13px;">
+                            {% if enrollment.status == 'approved' %}Approved{% else %}Rejected{% endif %}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No enrollments found.</p>
+    {% endif %}
+</div>
+
+<script>
+function approveEnrollment(enrollmentId) {
+    if (!confirm('Are you sure you want to approve this enrollment?')) {
+        return;
+    }
+    
+    fetch(`/admin/enrollments/${enrollmentId}/approve`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update status badge
+            const statusBadge = document.getElementById(`status-${enrollmentId}`);
+            if (statusBadge) {
+                statusBadge.textContent = 'Approved';
+                statusBadge.className = 'status-badge status-approved';
+            }
+            
+            // Update actions cell
+            const row = document.getElementById(`enrollment-${enrollmentId}`);
+            if (row) {
+                const actionsCell = row.cells[6];
+                if (actionsCell) {
+                    actionsCell.innerHTML = '<span style="color: var(--text-secondary); font-size: 13px;">Approved</span>';
+                }
+            }
+            
+            // Show success message
+            alert('Enrollment approved successfully! Student will receive a notification.');
+        } else {
+            alert('Error: ' + (data.error || 'Failed to approve enrollment'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while approving the enrollment.');
+    });
+}
+
+function rejectEnrollment(enrollmentId) {
+    if (!confirm('Are you sure you want to reject this enrollment?')) {
+        return;
+    }
+    
+    fetch(`/admin/enrollments/${enrollmentId}/reject`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update status badge
+            const statusBadge = document.getElementById(`status-${enrollmentId}`);
+            if (statusBadge) {
+                statusBadge.textContent = 'Rejected';
+                statusBadge.className = 'status-badge status-rejected';
+            }
+            
+            // Update actions cell
+            const row = document.getElementById(`enrollment-${enrollmentId}`);
+            if (row) {
+                const actionsCell = row.cells[6];
+                if (actionsCell) {
+                    actionsCell.innerHTML = '<span style="color: var(--text-secondary); font-size: 13px;">Rejected</span>';
+                }
+            }
+            
+            // Show success message
+            alert('Enrollment rejected. Student will receive a notification.');
+        } else {
+            alert('Error: ' + (data.error || 'Failed to reject enrollment'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while rejecting the enrollment.');
+    });
+}
+
+// Event delegation for approve/reject buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('approve-btn')) {
+            const enrollmentId = e.target.getAttribute('data-enrollment-id');
+            if (enrollmentId) {
+                approveEnrollment(parseInt(enrollmentId));
+            }
+        } else if (e.target.classList.contains('reject-btn')) {
+            const enrollmentId = e.target.getAttribute('data-enrollment-id');
+            if (enrollmentId) {
+                rejectEnrollment(parseInt(enrollmentId));
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Profile - CourseHub{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <h2>Admin Profile</h2>
+        
+        <div class="profile-info">
+            <div class="info-group">
+                <label>Full Name:</label>
+                <p>{{ admin.full_name }}</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Registration Number:</label>
+                <p>{{ admin.regno }}</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Email:</label>
+                <p>{{ admin.email }}</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Phone Number:</label>
+                <p>{{ admin.phno }}</p>
+            </div>
+            
+            <div class="info-group">
+                <label>Member Since:</label>
+                <p>{{ admin.created_at.strftime('%B %d, %Y') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

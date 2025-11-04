@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}{{ chapter.title }} - {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+<style>
+.code-editor-container {
+    margin: 20px 0;
+    border: 1px solid hsl(0 0% 14.9%);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.CodeMirror {
+    height: 400px;
+    font-size: 14px;
+}
+.run-code-btn {
+    margin-top: 10px;
+}
+.output-container {
+    margin-top: 10px;
+    padding: 15px;
+    background: hsl(0 0% 12%);
+    border-radius: 8px;
+    min-height: 50px;
+}
+.checkpoint-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: hsl(0 0% 12%);
+    border-radius: 8px;
+}
+.checkpoint-checkbox-container {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+.checkpoint-checkbox {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid hsl(0 0% 14.9%);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chapter-view-container">
+    <div class="chapter-header">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a> / 
+            <a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a> / 
+            <span>Chapter {{ chapter.chapter_number }}</span>
+        </nav>
+        <h1>{{ chapter.title }}</h1>
+    </div>
+
+    <div class="chapter-content">
+        <div class="content-text">
+            {% if chapter.content %}
+                {{ chapter.content|safe }}
+            {% else %}
+                <p>Course content will be available soon. Please check back later.</p>
+            {% endif %}
+        </div>
+
+        {% if chapter.checkpoint %}
+        <div class="checkpoint-section">
+            <h3>Checkpoint</h3>
+            <div class="checkpoint-checkbox-container">
+                <input type="checkbox" 
+                       id="checkpoint" 
+                       class="checkpoint-checkbox" 
+                       {% if progress and progress.completed %}checked disabled{% endif %}
+                       {% if not progress or not progress.completed %}onchange="completeCheckpoint()"{% endif %}>
+                <label for="checkpoint">{{ chapter.checkpoint }}</label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="code-editor-container">
+            <h3>Code Editor</h3>
+            <textarea id="codeEditor"></textarea>
+            <button onclick="runCode()" class="btn btn-primary run-code-btn">Run Code</button>
+            <div id="output" class="output-container"></div>
+        </div>
+
+        <div class="navigation-buttons">
+            {% if prev_chapter %}
+            <a href="{{ url_for('view_chapter', chapter_id=prev_chapter.id) }}" class="btn btn-secondary">← Previous</a>
+            {% else %}
+            <div></div>
+            {% endif %}
+            {% if next_chapter %}
+            <a href="{{ url_for('view_chapter', chapter_id=next_chapter.id) }}" class="btn btn-primary">Next →</a>
+            {% else %}
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-primary">Back to Course</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+<script>
+const editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+    lineNumbers: true,
+    theme: 'dracula',
+    mode: 'javascript'
+});
+
+function runCode() {
+    const code = editor.getValue();
+    const output = document.getElementById('output');
+    try {
+        // Simple code execution - in production, use a backend API
+        output.innerHTML = '<pre>Code execution feature requires backend setup</pre>';
+    } catch (e) {
+        output.innerHTML = '<pre style="color: red;">Error: ' + e.message + '</pre>';
+    }
+}
+
+function completeCheckpoint() {
+    const checkbox = document.getElementById('checkpoint');
+    if (checkbox.checked) {
+        fetch('/complete-checkpoint/{{ chapter.id }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                checkbox.disabled = true;
+                alert('Checkpoint completed!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            checkbox.checked = false;
+        });
+    }
+}
+
+// Track time spent
+let startTime = Date.now();
+setInterval(() => {
+    const timeSpent = (Date.now() - startTime) / 1000;
+    fetch('/api/track-progress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chapter_id: {{ chapter.id }},
+            time_spent: timeSpent
+        })
+    });
+    startTime = Date.now();
+}, 60000); // Track every minute
+</script>
+{% endblock %}
+

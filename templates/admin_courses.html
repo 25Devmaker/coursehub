@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Courses - CourseHub{% endblock %}
+
+{% block content %}
+<div class="admin-courses">
+    <div class="page-header">
+        <h1>Manage Courses</h1>
+        <a href="{{ url_for('admin_create_course') }}" class="btn btn-primary">Create New Course</a>
+    </div>
+
+    {% if courses %}
+    <div class="courses-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="course-icon-wrapper">
+                {% if course.thumbnail %}
+                <img src="{{ course.thumbnail }}" alt="{{ course.title }}" class="course-thumbnail-img">
+                {% else %}
+                <div class="course-thumbnail">{{ course.title[0] }}</div>
+                {% endif %}
+            </div>
+            <h3>{{ course.title }}</h3>
+            <div class="course-meta">
+                <span class="meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    {{ course.total_chapters }} chapters
+                </span>
+                <span class="meta-separator">•</span>
+                <span class="meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    {{ course.total_hours }} hrs
+                </span>
+            </div>
+            <div class="course-id">id: {{ course.id }}</div>
+            <div class="course-actions">
+                <a href="{{ url_for('admin_edit_course', course_id=course.id) }}" class="btn btn-secondary btn-small">Edit</a>
+                <a href="{{ url_for('admin_course_students', course_id=course.id) }}" class="btn btn-primary btn-small">View Students</a>
+                <a href="{{ url_for('admin_add_chapter', course_id=course.id) }}" class="btn btn-secondary btn-small">Add Chapter</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No courses found. Create your first course!</p>
+    {% endif %}
+</div>
+{% endblock %}
+

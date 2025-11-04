@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Course - CourseHub{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>Edit Course</h2>
+        
+        <form method="POST" action="{{ url_for('admin_edit_course', course_id=course.id) }}">
+            <div class="form-group">
+                <label for="title">Course Title</label>
+                <input type="text" id="title" name="title" value="{{ course.title }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required>{{ course.description }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="thumbnail">Thumbnail URL</label>
+                <input type="url" id="thumbnail" name="thumbnail" value="{{ course.thumbnail or '' }}" placeholder="https://example.com/image.jpg">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="total_chapters">Total Chapters</label>
+                    <input type="number" id="total_chapters" name="total_chapters" min="0" value="{{ course.total_chapters }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="total_hours">Total Hours</label>
+                    <input type="number" id="total_hours" name="total_hours" min="0" step="0.1" value="{{ course.total_hours }}" required>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Course</button>
+                <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary">Cancel</a>
+                <a href="{{ url_for('admin_add_chapter', course_id=course.id) }}" class="btn btn-secondary">Add Chapter</a>
+            </div>
+        </form>
+
+        {% if course.chapters %}
+        <div class="chapters-list" style="margin-top: 30px;">
+            <h3>Course Chapters</h3>
+            <ul>
+                {% for chapter in course.chapters|sort(attribute='chapter_number') %}
+                <li style="padding: 10px; background: hsl(0 0% 12%); margin: 5px 0; border-radius: 8px;">
+                    Chapter {{ chapter.chapter_number }}: {{ chapter.title }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

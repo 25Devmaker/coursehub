@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - CourseHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.checkpoint-list {
+    list-style: none;
+    padding: 0;
+}
+.checkpoint-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    background: hsl(0 0% 12%);
+    border-radius: 8px;
+}
+.checkpoint-checkbox {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+.checkpoint-completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-view-container">
+    <div class="course-header">
+        {% if course.thumbnail %}
+        <img src="{{ course.thumbnail }}" alt="{{ course.title }}" class="course-thumbnail-large-img">
+        {% else %}
+        <div class="course-thumbnail-large">{{ course.title[0] }}</div>
+        {% endif %}
+        <div class="course-info">
+            <h1>{{ course.title }}</h1>
+            <p>{{ course.description }}</p>
+            <div class="course-stats">
+                <span>{{ course.total_chapters }} Chapters</span>
+                <span>{{ course.total_hours }} Hours</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="course-content">
+        <div class="chapters-sidebar">
+            <h3>Course Chapters</h3>
+            <ul class="chapters-list">
+                {% for chapter in chapters %}
+                <li class="chapter-item {% if progress.get(chapter.id) %}completed{% endif %}">
+                    <a href="{{ url_for('view_chapter', chapter_id=chapter.id) }}">
+                        <span class="chapter-number">{{ chapter.chapter_number }}</span>
+                        <span class="chapter-title">{{ chapter.title }}</span>
+                        {% if progress.get(chapter.id) %}
+                        <span class="checkmark">✓</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="course-main">
+            <div class="welcome-message">
+                <h2>Welcome to {{ course.title }}</h2>
+                <p>Select a chapter from the sidebar to start learning.</p>
+                {% if chapters %}
+                <a href="{{ url_for('view_chapter', chapter_id=chapters[0].id) }}" class="btn btn-primary">Start with Chapter 1</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

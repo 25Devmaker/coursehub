@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Student Progress - CourseHub{% endblock %}
+
+{% block content %}
+<div class="admin-student-progress">
+    <h1>Progress for {{ student.name }}</h1>
+    <p>USN: {{ student.usn }} | Email: {{ student.email }}</p>
+    
+    {% if progress %}
+    <div class="progress-list">
+        {% for p in progress %}
+        <div class="progress-item">
+            <h3>{{ p.course.title }}</h3>
+            <p>Chapter: {{ p.chapter.title }}</p>
+            <div class="progress-meta">
+                <span class="status-badge status-{{ 'completed' if p.completed else 'pending' }}">
+                    {% if p.completed %}Completed{% else %}In Progress{% endif %}
+                </span>
+                {% if p.completed %}
+                <span>Completed: {{ p.completed_at.strftime('%Y-%m-%d') }}</span>
+                {% endif %}
+                <span>Time Spent: {{ "%.2f"|format(p.time_spent) }} hours</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No progress recorded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Course Students - CourseHub{% endblock %}
+
+{% block content %}
+<div class="admin-course-students">
+    <h1>{{ course.title }} - Enrolled Students</h1>
+    
+    {% if enrollments %}
+    <div class="students-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>USN</th>
+                    <th>Email</th>
+                    <th>Enrolled At</th>
+                    <th>Approved At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments %}
+                <tr>
+                    <td>{{ enrollment.student.name }}</td>
+                    <td>{{ enrollment.student.usn }}</td>
+                    <td>{{ enrollment.student.email }}</td>
+                    <td>{{ enrollment.enrolled_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if enrollment.approved_at %}
+                        {{ enrollment.approved_at.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin_student_progress', student_id=enrollment.student.id) }}" class="btn btn-primary btn-small">View Progress</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No students enrolled in this course yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+

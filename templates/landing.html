@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}CourseHub - Learn Anytime, Anywhere{% endblock %}
+
+{% block content %}
+<div class="landing-hero">
+    <div class="hero-content">
+        <h1>Welcome to CourseHub</h1>
+        <p class="hero-subtitle">Learn Anytime, Anywhere with Hands-On Projects and Free Certifications</p>
+        <a href="{{ url_for('get_started') }}" class="btn btn-primary">Get Started</a>
+    </div>
+</div>
+
+<div class="landing-section">
+    <div class="about-section">
+        <h2>About CourseHub</h2>
+        <div class="about-content">
+            <p class="about-intro">
+                CourseHub is a cutting-edge online learning platform designed to revolutionize the way students engage with education. 
+                We provide a comprehensive course registration system that seamlessly connects learners with high-quality educational content 
+                across multiple domains including programming, networking, database management, and artificial intelligence.
+            </p>
+            
+            <div class="about-features">
+                <div class="about-feature-item">
+                    <h3>🎯 Mission</h3>
+                    <p>
+                        Our mission is to democratize education by making quality learning resources accessible to everyone. 
+                        We believe that learning should be flexible, engaging, and tailored to individual needs. CourseHub empowers 
+                        students to take control of their educational journey through our intuitive platform and innovative features.
+                    </p>
+                </div>
+                
+                <div class="about-feature-item">
+                    <h3>🚀 Key Features</h3>
+                    <ul class="feature-list">
+                        <li><strong>Automated Enrollment System:</strong> Our intelligent bot automatically approves course enrollments, 
+                            ensuring a smooth and efficient registration process without manual intervention.</li>
+                        <li><strong>AI-Powered Learning Tracker:</strong> Advanced artificial intelligence monitors your learning patterns 
+                            and adapts course content to match your pace, ensuring optimal comprehension and retention.</li>
+                        <li><strong>Interactive Code Editor:</strong> Practice programming languages directly in the browser with our 
+                            integrated code editor, featuring syntax highlighting and real-time execution capabilities.</li>
+                        <li><strong>Progress Checkpoints:</strong> Complete checkpoints throughout each course to reinforce learning and 
+                            track your advancement through the curriculum.</li>
+                        <li><strong>Certification Program:</strong> Earn free certificates upon course completion to showcase your achievements 
+                            and enhance your professional profile.</li>
+                        <li><strong>Real-time Analytics:</strong> Administrators can monitor student progress, enrollment statistics, and 
+                            learning outcomes through comprehensive dashboards and visualizations.</li>
+                    </ul>
+                </div>
+                
+                <div class="about-feature-item">
+                    <h3>📚 Comprehensive Course Library</h3>
+                    <p>
+                        CourseHub offers an extensive catalog of courses covering essential programming languages and technologies:
+                    </p>
+                    <ul class="feature-list">
+                        <li><strong>Programming Fundamentals:</strong> Master core languages like Java, Python, C++, and C with structured 
+                            curricula designed for both beginners and advanced learners.</li>
+                        <li><strong>System & Network Engineering:</strong> Deep dive into Computer Networks, understanding protocols, 
+                            architectures, and network security principles.</li>
+                        <li><strong>Productivity Tools:</strong> Excel in Office Automation Tools to boost your workplace efficiency 
+                            and streamline business processes.</li>
+                        <li><strong>Database Management:</strong> Learn SQL and database design to manage and manipulate data effectively 
+                            in enterprise environments.</li>
+                        <li><strong>Emerging Technologies:</strong> Explore the Use of AI and understand how artificial intelligence 
+                            is transforming industries and creating new opportunities.</li>
+                    </ul>
+                </div>
+                
+                <div class="about-feature-item">
+                    <h3>🎓 Learning Experience</h3>
+                    <p>
+                        Our platform is built with students in mind. Each course features:
+                    </p>
+                    <ul class="feature-list">
+                        <li>Detailed chapter-by-chapter breakdowns with comprehensive explanations</li>
+                        <li>Syntax examples and code snippets for practical understanding</li>
+                        <li>Interactive exercises and hands-on projects to reinforce concepts</li>
+                        <li>Checkpoint assessments to validate your progress</li>
+                        <li>Flexible navigation with previous/next chapter buttons</li>
+                        <li>Time tracking to help you manage your learning schedule</li>
+                    </ul>
+                </div>
+                
+                <div class="about-feature-item">
+                    <h3>✨ What Makes Us Different</h3>
+                    <p>
+                        Unlike traditional learning platforms, CourseHub combines the best of educational technology with user-centric design:
+                    </p>
+                    <ul class="feature-list">
+                        <li><strong>Automated Workflows:</strong> Reduce administrative burden with intelligent automation</li>
+                        <li><strong>Adaptive Learning:</strong> AI algorithms adjust content difficulty based on your performance</li>
+                        <li><strong>Seamless Integration:</strong> All tools are integrated into one cohesive platform</li>
+                        <li><strong>Modern Dark Theme:</strong> Enjoy a comfortable learning experience with our aesthetically pleasing interface</li>
+                        <li><strong>Mobile Responsive:</strong> Access your courses from any device, anywhere, anytime</li>
+                        <li><strong>Email Notifications:</strong> Stay informed with automated enrollment confirmations and updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="landing-section">
+    <h2>Courses Offered</h2>
+    <div class="courses-grid">
+        {% for course in courses[:8] %}
+        <div class="course-card">
+            <div class="course-icon-wrapper">
+                {% if course.thumbnail %}
+                <img src="{{ course.thumbnail }}" alt="{{ course.title }}" class="course-thumbnail-img">
+                {% else %}
+                <div class="course-thumbnail">{{ course.title[0] }}</div>
+                {% endif %}
+            </div>
+            <h3>{{ course.title }}</h3>
+            <div class="course-meta">
+                <span class="meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    {{ course.total_chapters }} chapters
+                </span>
+                <span class="meta-separator">•</span>
+                <span class="meta-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    {{ course.total_hours }} hrs
+                </span>
+            </div>
+            <div class="course-id">id: {{ course.id }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="landing-section features-section">
+    <h2>Why Choose CourseHub?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Hands-On Projects</h3>
+            <p>Learn by doing with real-world projects that enhance your practical skills and build your portfolio.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Free Certifications</h3>
+            <p>Earn valuable certificates upon course completion to boost your career and showcase your expertise.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI-Powered Learning</h3>
+            <p>Personalized learning experience that adapts to your progress, learning speed, and comprehension level.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Interactive Content</h3>
+            <p>Engage with interactive code editors, real-time feedback, and hands-on coding exercises.</p>
+        </div>
+    </div>
+</div>
+
+<div class="landing-section cta-section">
+    <div class="cta-content">
+        <h2>Ready to Start Your Learning Journey?</h2>
+        <p class="cta-subtitle">Join thousands of students who are already learning with CourseHub. Create your account today and unlock access to our comprehensive course library!</p>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-large">Sign Up Now</a>
+        <p class="cta-note">Already have an account? <a href="{{ url_for('login') }}" class="cta-link">Log in here</a></p>
+    </div>
+</div>
+{% endblock %}

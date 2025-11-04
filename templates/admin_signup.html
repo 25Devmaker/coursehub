@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Registration - CourseHub{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Admin Registration</h2>
+        <p class="auth-subtitle">Create your admin account</p>
+        
+        <form method="POST" action="{{ url_for('admin_signup') }}">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="regno">Registration Number</label>
+                <input type="text" id="regno" name="regno" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phno">Phone Number</label>
+                <input type="tel" id="phno" name="phno" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Create Password</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Create Admin Account</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

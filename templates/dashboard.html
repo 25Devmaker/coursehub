@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CourseHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1>Welcome, {{ user.name }}!</h1>
+            <p>Continue your learning journey</p>
+        </div>
+        {% if notifications %}
+        <div class="notification-bell" id="notificationBell">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge">{{ notifications|length }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if notifications %}
+<div class="notifications-container" id="notificationsContainer">
+    <div class="notifications-header">
+        <h3>Notifications</h3>
+        <button onclick="markAllAsRead()" class="btn btn-secondary btn-small">Mark all as read</button>
+    </div>
+    <div class="notifications-list">
+        {% for notification in notifications %}
+        <div class="notification-item notification-{{ notification.type }}" data-id="{{ notification.id }}">
+            <div class="notification-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="bell-icon">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <p>{{ notification.message }}</p>
+                <small>{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+            <button class="notification-close" data-notification-id="{{ notification.id }}">×</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="dashboard-sections">
+    <section class="my-courses-section">
+        <h2>My Enrolled Courses</h2>
+        {% if enrollments %}
+        <div class="courses-grid">
+            {% for enrollment in enrollments %}
+                {% if enrollment.status == 'approved' %}
+                <div class="course-card">
+                    <div class="course-status approved">Approved</div>
+                    <div class="course-icon-wrapper">
+                        {% if enrollment.course.thumbnail %}
+                        <img src="{{ enrollment.course.thumbnail }}" alt="{{ enrollment.course.title }}" class="course-thumbnail-img">
+                        {% else %}
+                        <div class="course-thumbnail">{{ enrollment.course.title[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <h3>{{ enrollment.course.title }}</h3>
+                    <div class="course-meta">
+                        <span class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            {{ enrollment.course.total_chapters }} chapters
+                        </span>
+                        <span class="meta-separator">•</span>
+                        <span class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            {{ enrollment.course.total_hours }} hrs
+                        </span>
+                    </div>
+                    <div class="course-id">id: {{ enrollment.course.id }}</div>
+                    <a href="{{ url_for('view_course', course_id=enrollment.course_id) }}" class="btn btn-primary btn-small">Continue Learning</a>
+                </div>
+                {% elif enrollment.status == 'pending' %}
+                <div class="course-card">
+                    <div class="course-status pending">Pending Approval</div>
+                    <div class="course-icon-wrapper">
+                        {% if enrollment.course.thumbnail %}
+                        <img src="{{ enrollment.course.thumbnail }}" alt="{{ enrollment.course.title }}" class="course-thumbnail-img">
+                        {% else %}
+                        <div class="course-thumbnail">{{ enrollment.course.title[0] }}</div>
+                        {% endif %}
+                    </div>
+                    <h3>{{ enrollment.course.title }}</h3>
+                    <div class="course-meta">
+                        <span class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            {{ enrollment.course.total_chapters }} chapters
+                        </span>
+                        <span class="meta-separator">•</span>
+                        <span class="meta-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            {{ enrollment.course.total_hours }} hrs
+                        </span>
+                    </div>
+                    <div class="course-id">id: {{ enrollment.course.id }}</div>
+                    <p class="pending-message">Your enrollment is being reviewed...</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">You haven't enrolled in any courses yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="available-courses-section">
+        <h2>Available Courses</h2>
+        {% if available_courses %}
+        <div class="courses-grid">
+            {% for course in available_courses %}
+            <div class="course-card">
+                <div class="course-icon-wrapper">
+                    {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail }}" alt="{{ course.title }}" class="course-thumbnail-img">
+                    {% else %}
+                    <div class="course-thumbnail">{{ course.title[0] }}</div>
+                    {% endif %}
+                </div>
+                <h3>{{ course.title }}</h3>
+                <div class="course-meta">
+                    <span class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        {{ course.total_chapters }} chapters
+                    </span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        {{ course.total_hours }} hrs
+                    </span>
+                </div>
+                <div class="course-id">id: {{ course.id }}</div>
+                <a href="{{ url_for('enroll', course_id=course.id) }}" class="btn btn-primary btn-small">Enroll Now</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">You've enrolled in all available courses!</p>
+        {% endif %}
+    </section>
+</div>
+
+<script>
+function markAsRead(notificationId) {
+    fetch(`/api/mark-notification-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notification = document.querySelector(`[data-id="${notificationId}"]`);
+            if (notification) {
+                notification.classList.add('read');
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        notification.remove();
+                        updateNotificationBadge();
+                    }, 300);
+                }, 200);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function markAllAsRead() {
+    fetch('/api/mark-all-notifications-read', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notifications = document.querySelectorAll('.notification-item');
+            notifications.forEach((notification, index) => {
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        notification.remove();
+                        if (index === notifications.length - 1) {
+                            updateNotificationBadge();
+                        }
+                    }, 300);
+                }, index * 100);
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function updateNotificationBadge() {
+    const notifications = document.querySelectorAll('.notification-item:not(.read)');
+    const badge = document.querySelector('.notification-badge');
+    const bell = document.getElementById('notificationBell');
+    const container = document.getElementById('notificationsContainer');
+    
+    if (notifications.length === 0) {
+        if (badge) badge.remove();
+        if (container) {
+            container.style.opacity = '0';
+            setTimeout(() => container.remove(), 300);
+        }
+        if (bell && bell.querySelector('.notification-badge')) {
+            bell.style.display = 'none';
+        }
+    } else {
+        if (badge) {
+            badge.textContent = notifications.length;
+        }
+    }
+}
+
+// Auto-hide notifications after 10 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const notifications = document.querySelectorAll('.notification-item');
+    notifications.forEach((notification, index) => {
+        setTimeout(() => {
+            const notificationId = notification.getAttribute('data-id');
+            if (notificationId) {
+                markAsRead(parseInt(notificationId));
+            }
+        }, 10000 + (index * 1000));
+    });
+    
+    // Add event delegation for close buttons (backup method)
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('notification-close')) {
+            const notificationId = e.target.getAttribute('data-notification-id');
+            if (notificationId) {
+                markAsRead(parseInt(notificationId));
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+

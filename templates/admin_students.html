@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Students - CourseHub{% endblock %}
+
+{% block content %}
+<div class="admin-students">
+    <h1>All Students</h1>
+    
+    {% if students %}
+    <div class="students-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>USN</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.usn }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_student_progress', student_id=student.id) }}" class="btn btn-primary btn-small">View Progress</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No students found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
